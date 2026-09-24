@@ -1,0 +1,103 @@
+class Account:
+    def __init__(self, name, number):
+        self.name = name
+        self.number = number
+        self.__balance = 0
+
+    def getBalance(self):
+        return self.__balance
+
+    def deposit(self, amount):
+        self.__balance += amount
+
+    def withdraw(self, amount):
+        if amount > self.__balance:
+            print("Insufficient funds")
+        else:
+            self.__balance -= amount
+
+    def __str__(self):
+        return f"{self.name} [{self.number}] P {self.__balance}"
+
+    def __del__(self):
+        print(f"Account {self.number} closed")
+
+
+class SavingsAccount(Account):
+    def __init__(self, name, number):
+        super().__init__(name, number)
+        self.__interest = 0.05
+
+    def addInterest(self):
+        self.deposit(self.getBalance() * self.__interest)
+
+
+class Bank:
+    def __init__(self, name):
+        self.name = name
+        self.__accounts = []
+        print("Welcome to", name)
+
+    def showAccounts(self):
+        print("Showing accounts")
+        for account in self.__accounts:
+            print(account)
+
+    def openAccount(self):
+        print("Ready to open an account")
+        name = input("Account name: ")
+        number = input("Account number: ")
+        kind = input("Account type (savings or checking): ")
+
+        if kind == "savings":
+            account = SavingsAccount(name, number)
+        else:
+            account = Account(name, number)
+
+        self.__accounts.append(account)
+        print("Account created")
+        print(account)
+
+    def deposit(self):
+        print("Ready to deposit an amount")
+        amount = float(input("Enter amount to deposit: "))
+        print("You are about to deposit an amount of P", amount)
+        number = input("Enter account number: ")
+
+        for account in self.__accounts:
+            if account.number == number:
+                account.deposit(amount)
+                print("Deposit successful")
+                print(account)
+
+    def addInterest(self):
+        print("Adding interest to all savings accounts")
+        for account in self.__accounts:
+            if isinstance(account, SavingsAccount):
+                account.addInterest()
+                print("Interest added to account", account.number)
+                print(account)
+
+    def closeAccount(self):
+        print("Ready to close an account")
+        number = input("Enter account number: ")
+
+        for account in self.__accounts:
+            if account.number == number:
+                self.__accounts.remove(account)
+                del account
+                print("Account closed")
+                break
+
+    def __del__(self):
+        print("Thank you for banking with", self.name)
+
+
+mbtc = Bank("Metrobank")
+mbtc.openAccount()
+mbtc.openAccount()
+mbtc.showAccounts()
+mbtc.deposit()
+mbtc.deposit()
+mbtc.addInterest()
+mbtc.closeAccount()
